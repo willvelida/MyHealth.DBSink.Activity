@@ -1,10 +1,12 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyHealth.Common;
+using MyHealth.DBSink.Activity.Models;
+using MyHealth.DBSink.Activity.Services;
+using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 namespace MyHealth.DBSink.Activity.Functions
 {
@@ -13,25 +15,30 @@ namespace MyHealth.DBSink.Activity.Functions
         private readonly ILogger<CreateActivityDocument> _logger;
         private readonly IServiceBusHelpers _serviceBusHelpers;
         private readonly IConfiguration _configuration;
+        private readonly IActivityDbService _activityDbService;
 
         public CreateActivityDocument(
             ILogger<CreateActivityDocument> logger,
             IServiceBusHelpers serviceBusHelpers,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IActivityDbService activityDbService)
         {
             _logger = logger;
             _serviceBusHelpers = serviceBusHelpers;
             _configuration = configuration;
+            _activityDbService = activityDbService;
         }
 
         [FunctionName(nameof(CreateActivityDocument))]
-        public async Task Run([ServiceBusTrigger("mytopic", "mysubscription", Connection = "")]string mySbMsg, ILogger log)
+        public async Task Run([ServiceBusTrigger("mytopic", "mysubscription", Connection = "")] string mySbMsg)
         {
             try
             {
                 // Convert incoming message into Activity Document
+                var activityDocument = JsonConvert.DeserializeObject<ActivityDocument>(mySbMsg);
 
                 // Persist Activity Document to Cosmos DB
+                await _activityDbService.AddActivityDocument(activityDocument);
             }
             catch (Exception ex)
             {

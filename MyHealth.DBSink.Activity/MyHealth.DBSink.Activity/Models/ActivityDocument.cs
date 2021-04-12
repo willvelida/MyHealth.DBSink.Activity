@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using mdl = MyHealth.Common.Models;
+﻿using mdl = MyHealth.Common.Models;
 
 namespace MyHealth.DBSink.Activity.Models
 {
