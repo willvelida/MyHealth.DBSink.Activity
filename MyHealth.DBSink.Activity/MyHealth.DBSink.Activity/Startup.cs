@@ -20,6 +20,7 @@ namespace MyHealth.DBSink.Activity
                 .Build();
 
             builder.Services.AddSingleton<IConfiguration>(config);
+            builder.Services.AddLogging();
 
             builder.Services.AddSingleton(sp =>
             {

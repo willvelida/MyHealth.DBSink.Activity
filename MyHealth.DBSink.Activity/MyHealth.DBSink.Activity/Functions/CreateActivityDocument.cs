@@ -1,7 +1,6 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using MyHealth.Common;
 using MyHealth.DBSink.Activity.Models;
 using MyHealth.DBSink.Activity.Services;
 using Newtonsoft.Json;
@@ -13,24 +12,21 @@ namespace MyHealth.DBSink.Activity.Functions
     public class CreateActivityDocument
     {
         private readonly ILogger<CreateActivityDocument> _logger;
-        private readonly IServiceBusHelpers _serviceBusHelpers;
         private readonly IConfiguration _configuration;
         private readonly IActivityDbService _activityDbService;
 
         public CreateActivityDocument(
             ILogger<CreateActivityDocument> logger,
-            IServiceBusHelpers serviceBusHelpers,
             IConfiguration configuration,
             IActivityDbService activityDbService)
         {
             _logger = logger;
-            _serviceBusHelpers = serviceBusHelpers;
             _configuration = configuration;
             _activityDbService = activityDbService;
         }
 
         [FunctionName(nameof(CreateActivityDocument))]
-        public async Task Run([ServiceBusTrigger("mytopic", "mysubscription", Connection = "")] string mySbMsg)
+        public async Task Run([ServiceBusTrigger("ActivityTopic", "ActivitySubscription", Connection = "ServiceBusConnectionString")] string mySbMsg)
         {
             try
             {
@@ -43,9 +39,8 @@ namespace MyHealth.DBSink.Activity.Functions
             catch (Exception ex)
             {
                 // Log Error
-                _logger.LogError($"Exception thrown in {nameof(CreateActivityDocument)}: {ex.Message}");
-                // Send Exception to Exception topic
-                await _serviceBusHelpers.SendMessageToTopic(_configuration["ExceptionTopic"], ex);
+                _logger.LogError($"Exception thrown in {nameof(CreateActivityDocument)}", ex);
+                throw;
             }
         }
     }
