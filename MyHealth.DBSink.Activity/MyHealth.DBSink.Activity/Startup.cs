@@ -28,12 +28,6 @@ namespace MyHealth.DBSink.Activity
                 return new CosmosClient(config["CosmosDBConnectionString"]);
             });
 
-            builder.Services.AddSingleton(sp =>
-            {
-                IConfiguration config = sp.GetService<IConfiguration>();
-                return new ServiceBusHelpers(config["ServiceBusConnectionString"]);
-            });
-
             builder.Services.AddScoped<IActivityDbService, ActivityDbService>();
         }
     }
