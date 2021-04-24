@@ -35,17 +35,13 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
         public async Task AddActivityDocumentWhenCreateItemAsyncIsCalled()
         {
             // Arrange
-            var testActivityDocument = new ActivityDocument
+            Common.Models.Activity testActivityDocument = new Common.Models.Activity
             {
-                Id = Guid.NewGuid().ToString(),
-                Activity = new Common.Models.Activity
-                {
-                    CaloriesBurned = 10000
-                },
-                DocumentType = "Test"
+                CaloriesBurned = 10000
             };
 
-            _mockContainer.SetupCreateItemAsync<ActivityDocument>();
+
+            _mockContainer.SetupCreateItemAsync<Common.Models.Activity>();
 
             // Act
             await _sut.AddActivityDocument(testActivityDocument);

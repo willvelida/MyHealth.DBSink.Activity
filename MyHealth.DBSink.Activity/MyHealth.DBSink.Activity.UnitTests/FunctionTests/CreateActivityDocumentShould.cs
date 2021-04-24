@@ -9,12 +9,13 @@ using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using mdl = MyHealth.Common.Models;
 
 namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 {
     public class CreateActivityDocumentShould
     {
-        private Mock<ILogger<CreateActivityDocument>> _mockLogger;
+        private Mock<ILogger> _mockLogger;
         private Mock<IConfiguration> _mockConfiguration;
         private Mock<IActivityDbService> _mockActivityDbService;
 
@@ -22,12 +23,12 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 
         public CreateActivityDocumentShould()
         {
-            _mockLogger = new Mock<ILogger<CreateActivityDocument>>();
             _mockConfiguration = new Mock<IConfiguration>();
+            _mockLogger = new Mock<ILogger>();
             _mockConfiguration.Setup(x => x["ServiceBusConnectionString"]).Returns("ServiceBusConnectionString");
             _mockActivityDbService = new Mock<IActivityDbService>();
 
-            _func = new CreateActivityDocument(_mockLogger.Object, _mockConfiguration.Object, _mockActivityDbService.Object);
+            _func = new CreateActivityDocument(_mockConfiguration.Object, _mockActivityDbService.Object);
         }
 
         [Fact]
@@ -46,13 +47,13 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 
             var testActivityDocumentString = JsonConvert.SerializeObject(testActivityDocument);
 
-            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<ActivityDocument>())).Returns(Task.CompletedTask);
+            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.Activity>())).Returns(Task.CompletedTask);
 
             // Act
-            await _func.Run(testActivityDocumentString);
+            await _func.Run(testActivityDocumentString, _mockLogger.Object);
 
             // Assert
-            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<ActivityDocument>()), Times.Once);
+            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<mdl.Activity>()), Times.Once);
         }
 
         [Fact]
@@ -71,13 +72,13 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 
             var testActivityDocumentString = JsonConvert.SerializeObject(testActivityDocument);
 
-            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<ActivityDocument>())).ThrowsAsync(It.IsAny<Exception>());
+            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.Activity>())).ThrowsAsync(It.IsAny<Exception>());
 
             // Act
-            Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString);
+            Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString, _mockLogger.Object);
 
             // Assert
-            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<ActivityDocument>()), Times.Never);
+            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<mdl.Activity>()), Times.Never);
             await responseAction.Should().ThrowAsync<Exception>();
         }
     }

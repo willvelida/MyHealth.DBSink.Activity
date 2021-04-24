@@ -1,10 +1,10 @@
-﻿using MyHealth.DBSink.Activity.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using mdl = MyHealth.Common.Models;
 
 namespace MyHealth.DBSink.Activity.Services
 {
     public interface IActivityDbService
     {
-        Task AddActivityDocument(ActivityDocument activityDocument);
+        Task AddActivityDocument(mdl.Activity activityDocument);
     }
 }
