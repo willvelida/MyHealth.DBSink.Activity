@@ -26,7 +26,7 @@ namespace MyHealth.DBSink.Activity.Functions
         }
 
         [FunctionName(nameof(CreateActivityDocument))]
-        public async Task Run([ServiceBusTrigger("ActivityTopic", "ActivitySubscription", Connection = "ServiceBusConnectionString")] string mySbMsg)
+        public async Task Run([ServiceBusTrigger("myhealthactivitytopic", "myhealthactivitysubscription", Connection = "ServiceBusConnectionString")] string mySbMsg)
         {
             try
             {

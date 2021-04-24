@@ -85,6 +85,6 @@ stages:
                     appType: functionApp
                     WebAppName: $(functionAppName)                   
                     package: '$(Pipeline.Workspace)/drop/MyHealth.DBSink.Activity.zip'
-                    appSettings: '-FUNCTIONS_WORKER_RUNTIME "dotnet" -FUNCTIONS_EXTENSION_VERSION "~3" -CosmosDBConnectionString "$(cosmosdbconnectionstring)" -ServiceBusConnectionString "$(servicebusstorageconnectionstring)" -DatabaseName "MyHealthDB" -ContainerName "Records" -ActivityTopic "myhealthactivitytopic" -ActivitySubscription "myhealthactivitysubscription" -APPINSIGHTS_INSTRUMENTATIONKEY "2fc597df-fc6b-4b20-ac9c-ee7240b70704"'
+                    appSettings: '-FUNCTIONS_WORKER_RUNTIME "dotnet" -FUNCTIONS_EXTENSION_VERSION "~3" -CosmosDBConnectionString "$(cosmosdbconnectionstring)" -ServiceBusConnectionString "$(servicebusstorageconnectionstring)" -DatabaseName "MyHealthDB" -ContainerName "Records" -APPINSIGHTS_INSTRUMENTATIONKEY "2fc597df-fc6b-4b20-ac9c-ee7240b70704"'
                     enableCustomDeployment: true
                     RemoveAdditionalFilesFlag: true
