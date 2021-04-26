@@ -3,7 +3,6 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MyHealth.Common;
 using MyHealth.DBSink.Activity;
 using MyHealth.DBSink.Activity.Functions;
 using MyHealth.DBSink.Activity.Services;

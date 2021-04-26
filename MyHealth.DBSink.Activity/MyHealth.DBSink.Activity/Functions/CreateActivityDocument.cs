@@ -1,11 +1,11 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using mdl = MyHealth.Common.Models;
 using MyHealth.DBSink.Activity.Services;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using mdl = MyHealth.Common.Models;
 
 namespace MyHealth.DBSink.Activity.Functions
 {

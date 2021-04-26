@@ -1,9 +1,9 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
-using mdl = MyHealth.Common.Models;
-using System.Threading.Tasks;
-using MyHealth.DBSink.Activity.Models;
+using MyHealth.Common.Models;
 using System;
+using System.Threading.Tasks;
+using mdl = MyHealth.Common.Models;
 
 namespace MyHealth.DBSink.Activity.Services
 {
@@ -29,7 +29,7 @@ namespace MyHealth.DBSink.Activity.Services
                 EnableContentResponseOnWrite = false
             };
 
-            ActivityDocument document = new ActivityDocument
+            ActivityEnvelope activityEnvelope = new ActivityEnvelope
             {
                 Id = Guid.NewGuid().ToString(),
                 Activity = activityDocument,
@@ -37,8 +37,8 @@ namespace MyHealth.DBSink.Activity.Services
             };
 
             await _myHealthContainer.CreateItemAsync(
-                document,
-                new PartitionKey(document.DocumentType),
+                activityEnvelope,
+                new PartitionKey(activityEnvelope.DocumentType),
                 itemRequestOptions);
         }
     }

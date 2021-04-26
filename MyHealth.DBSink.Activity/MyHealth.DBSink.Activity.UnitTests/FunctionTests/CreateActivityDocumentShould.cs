@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using MyHealth.Common.Models;
 using MyHealth.DBSink.Activity.Functions;
-using MyHealth.DBSink.Activity.Models;
 using MyHealth.DBSink.Activity.Services;
 using Newtonsoft.Json;
 using System;
@@ -35,7 +35,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         public async Task AddActivityDocumentSuccessfully()
         {
             // Arrange
-            var testActivityDocument = new ActivityDocument
+            var testActivityEnvelope = new ActivityEnvelope
             {
                 Id = Guid.NewGuid().ToString(),
                 Activity = new Common.Models.Activity
@@ -45,7 +45,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
                 DocumentType = "Test"
             };
 
-            var testActivityDocumentString = JsonConvert.SerializeObject(testActivityDocument);
+            var testActivityDocumentString = JsonConvert.SerializeObject(testActivityEnvelope);
 
             _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.Activity>())).Returns(Task.CompletedTask);
 
@@ -60,7 +60,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         public async Task CatchAndLogErrorWhenAddActivityDocumentThrowsException()
         {
             // Arrange
-            var testActivityDocument = new ActivityDocument
+            var testActivityEnvelope = new ActivityEnvelope
             {
                 Id = Guid.NewGuid().ToString(),
                 Activity = new Common.Models.Activity
@@ -70,7 +70,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
                 DocumentType = "Test"
             };
 
-            var testActivityDocumentString = JsonConvert.SerializeObject(testActivityDocument);
+            var testActivityDocumentString = JsonConvert.SerializeObject(testActivityEnvelope);
 
             _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.Activity>())).ThrowsAsync(It.IsAny<Exception>());
 

@@ -1,10 +1,9 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using MyHealth.DBSink.Activity.Models;
+using MyHealth.Common.Models;
 using MyHealth.DBSink.Activity.Services;
 using MyHealth.DBSink.Activity.UnitTests.TestHelpers;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -48,7 +47,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
 
             // Assert
             _mockContainer.Verify(x => x.CreateItemAsync(
-                It.IsAny<ActivityDocument>(),
+                It.IsAny<ActivityEnvelope>(),
                 It.IsAny<PartitionKey>(),
                 It.IsAny<ItemRequestOptions>(),
                 It.IsAny<CancellationToken>()), Times.Once);
