@@ -1,6 +1,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MyHealth.Common;
 using MyHealth.DBSink.Activity.Services;
 using Newtonsoft.Json;
 using System;
@@ -13,13 +14,16 @@ namespace MyHealth.DBSink.Activity.Functions
     {
         private readonly IConfiguration _configuration;
         private readonly IActivityDbService _activityDbService;
+        private readonly IServiceBusHelpers _serviceBusHelpers;
 
         public CreateActivityDocument(
             IConfiguration configuration,
-            IActivityDbService activityDbService)
+            IActivityDbService activityDbService,
+            IServiceBusHelpers serviceBusHelpers)
         {
             _configuration = configuration;
             _activityDbService = activityDbService;
+            _serviceBusHelpers = serviceBusHelpers;
         }
 
         [FunctionName(nameof(CreateActivityDocument))]
@@ -38,6 +42,7 @@ namespace MyHealth.DBSink.Activity.Functions
             {
                 // Log Error
                 logger.LogError($"Exception thrown in {nameof(CreateActivityDocument)}: {ex}", ex);
+                await _serviceBusHelpers.SendMessageToQueue(_configuration["ExceptionQueue"], ex);
                 throw;
             }
         }

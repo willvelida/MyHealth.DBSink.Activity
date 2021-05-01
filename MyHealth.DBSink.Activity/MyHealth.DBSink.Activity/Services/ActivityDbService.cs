@@ -24,22 +24,29 @@ namespace MyHealth.DBSink.Activity.Services
 
         public async Task AddActivityDocument(mdl.Activity activityDocument)
         {
-            ItemRequestOptions itemRequestOptions = new ItemRequestOptions
+            try
             {
-                EnableContentResponseOnWrite = false
-            };
+                ItemRequestOptions itemRequestOptions = new ItemRequestOptions
+                {
+                    EnableContentResponseOnWrite = false
+                };
 
-            ActivityEnvelope activityEnvelope = new ActivityEnvelope
+                ActivityEnvelope activityEnvelope = new ActivityEnvelope
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Activity = activityDocument,
+                    DocumentType = "Activity"
+                };
+
+                await _myHealthContainer.CreateItemAsync(
+                    activityEnvelope,
+                    new PartitionKey(activityEnvelope.DocumentType),
+                    itemRequestOptions);
+            }
+            catch (Exception ex)
             {
-                Id = Guid.NewGuid().ToString(),
-                Activity = activityDocument,
-                DocumentType = "Activity"
-            };
-
-            await _myHealthContainer.CreateItemAsync(
-                activityEnvelope,
-                new PartitionKey(activityEnvelope.DocumentType),
-                itemRequestOptions);
+                throw ex;
+            }
         }
     }
 }

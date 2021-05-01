@@ -1,9 +1,11 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using FluentAssertions;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using MyHealth.Common.Models;
 using MyHealth.DBSink.Activity.Services;
 using MyHealth.DBSink.Activity.UnitTests.TestHelpers;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,14 +45,38 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
             _mockContainer.SetupCreateItemAsync<Common.Models.Activity>();
 
             // Act
-            await _sut.AddActivityDocument(testActivityDocument);
+            Func<Task> serviceAction = async () => await _sut.AddActivityDocument(testActivityDocument);
 
             // Assert
+            await serviceAction.Should().NotThrowAsync<Exception>();
             _mockContainer.Verify(x => x.CreateItemAsync(
                 It.IsAny<ActivityEnvelope>(),
                 It.IsAny<PartitionKey>(),
                 It.IsAny<ItemRequestOptions>(),
                 It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ThrowExceptionWhenCreateItemAsyncCallFails()
+        {
+            // Arrange
+            Common.Models.Activity testActivityDocument = new Common.Models.Activity
+            {
+                CaloriesBurned = 10000
+            };
+
+            _mockContainer.SetupCreateItemAsync<Common.Models.Activity>();
+            _mockContainer.Setup(x => x.CreateItemAsync(
+                It.IsAny<ActivityEnvelope>(),
+                It.IsAny<PartitionKey>(),
+                It.IsAny<ItemRequestOptions>(),
+                It.IsAny<CancellationToken>())).ThrowsAsync(new Exception());
+
+            // Act
+            Func<Task> serviceAction = async () => await _sut.AddActivityDocument(testActivityDocument);
+
+            // Assert
+            await serviceAction.Should().ThrowAsync<Exception>();
         }
     }
 }
