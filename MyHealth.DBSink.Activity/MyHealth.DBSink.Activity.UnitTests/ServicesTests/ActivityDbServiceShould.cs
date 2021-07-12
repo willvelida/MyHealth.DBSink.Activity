@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
+using FluentAssertions;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -36,12 +37,9 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
         public async Task AddActivityDocumentWhenCreateItemAsyncIsCalled()
         {
             // Arrange
-            Common.Models.Activity testActivityDocument = new Common.Models.Activity
-            {
-                CaloriesBurned = 10000
-            };
-
-
+            var fixture = new Fixture();
+            var testActivityDocument = fixture.Create<Common.Models.Activity>();
+            
             _mockContainer.SetupCreateItemAsync<Common.Models.Activity>();
 
             // Act
@@ -60,10 +58,8 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
         public async Task ThrowExceptionWhenCreateItemAsyncCallFails()
         {
             // Arrange
-            Common.Models.Activity testActivityDocument = new Common.Models.Activity
-            {
-                CaloriesBurned = 10000
-            };
+            var fixture = new Fixture();
+            var testActivityDocument = fixture.Create<Common.Models.Activity>();
 
             _mockContainer.SetupCreateItemAsync<Common.Models.Activity>();
             _mockContainer.Setup(x => x.CreateItemAsync(

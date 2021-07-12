@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -41,15 +42,8 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         public async Task AddActivityDocumentSuccessfully()
         {
             // Arrange
-            var testActivityEnvelope = new ActivityEnvelope
-            {
-                Id = Guid.NewGuid().ToString(),
-                Activity = new Common.Models.Activity
-                {
-                    CaloriesBurned = 10000
-                },
-                DocumentType = "Test"
-            };
+            var fixture = new Fixture();
+            var testActivityEnvelope = fixture.Create<ActivityEnvelope>();
 
             var testActivityDocumentString = JsonConvert.SerializeObject(testActivityEnvelope);
 
@@ -67,15 +61,8 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         public async Task CatchAndLogErrorWhenAddActivityDocumentThrowsException()
         {
             // Arrange
-            var testActivityEnvelope = new ActivityEnvelope
-            {
-                Id = Guid.NewGuid().ToString(),
-                Activity = new Common.Models.Activity
-                {
-                    CaloriesBurned = 10000
-                },
-                DocumentType = "Test"
-            };
+            var fixture = new Fixture();
+            var testActivityEnvelope = fixture.Create<ActivityEnvelope>();
 
             var testActivityDocumentString = JsonConvert.SerializeObject(testActivityEnvelope);
 

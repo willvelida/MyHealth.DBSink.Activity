@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyHealth.DBSink.Activity", "MyHealth.DBSink.Activity\MyHealth.DBSink.Activity.csproj", "{81B77F33-1734-4718-A410-FDF4384A2C26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHealth.DBSink.Activity.UnitTests", "MyHealth.DBSink.Activity.UnitTests\MyHealth.DBSink.Activity.UnitTests.csproj", "{7601539A-3109-404E-B5B5-F1BBB799AB97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyHealth.DBSink.Activity.UnitTests", "MyHealth.DBSink.Activity.UnitTests\MyHealth.DBSink.Activity.UnitTests.csproj", "{7601539A-3109-404E-B5B5-F1BBB799AB97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHealth.DBSink.Activity.IntegrationTests", "MyHealth.DBSink.Activity.IntegrationTests\MyHealth.DBSink.Activity.IntegrationTests.csproj", "{68F032A1-4B16-40F8-8B54-C9B78FC71D38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7601539A-3109-404E-B5B5-F1BBB799AB97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7601539A-3109-404E-B5B5-F1BBB799AB97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7601539A-3109-404E-B5B5-F1BBB799AB97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68F032A1-4B16-40F8-8B54-C9B78FC71D38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68F032A1-4B16-40F8-8B54-C9B78FC71D38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68F032A1-4B16-40F8-8B54-C9B78FC71D38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68F032A1-4B16-40F8-8B54-C9B78FC71D38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
