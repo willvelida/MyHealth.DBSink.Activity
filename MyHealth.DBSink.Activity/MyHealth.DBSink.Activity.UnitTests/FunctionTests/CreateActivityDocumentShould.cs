@@ -6,6 +6,7 @@ using Moq;
 using MyHealth.Common;
 using MyHealth.Common.Models;
 using MyHealth.DBSink.Activity.Functions;
+using MyHealth.DBSink.Activity.Mappers;
 using MyHealth.DBSink.Activity.Services;
 using Newtonsoft.Json;
 using System;
@@ -20,6 +21,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         private Mock<ILogger> _mockLogger;
         private Mock<IConfiguration> _mockConfiguration;
         private Mock<IActivityDbService> _mockActivityDbService;
+        private Mock<IActivityEnvelopeMapper> _mockActivityEnvelopeMapper;
         private Mock<IServiceBusHelpers> _mockServiceBusHelpers;
 
         private CreateActivityDocument _func;
@@ -30,11 +32,13 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
             _mockLogger = new Mock<ILogger>();
             _mockConfiguration.Setup(x => x["ServiceBusConnectionString"]).Returns("ServiceBusConnectionString");
             _mockActivityDbService = new Mock<IActivityDbService>();
+            _mockActivityEnvelopeMapper = new Mock<IActivityEnvelopeMapper>();
             _mockServiceBusHelpers = new Mock<IServiceBusHelpers>();
 
             _func = new CreateActivityDocument(
-                _mockConfiguration.Object, 
+                _mockConfiguration.Object,
                 _mockActivityDbService.Object,
+                _mockActivityEnvelopeMapper.Object,
                 _mockServiceBusHelpers.Object);
         }
 
@@ -43,18 +47,39 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         {
             // Arrange
             var fixture = new Fixture();
+            var testActivity = fixture.Create<mdl.Activity>();
             var testActivityEnvelope = fixture.Create<ActivityEnvelope>();
+            var testActivityDocumentString = JsonConvert.SerializeObject(testActivity);
 
-            var testActivityDocumentString = JsonConvert.SerializeObject(testActivityEnvelope);
-
-            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.Activity>())).Returns(Task.CompletedTask);
+            _mockActivityEnvelopeMapper.Setup(x => x.MapActivityToActivityEnvelope(It.IsAny<mdl.Activity>())).Returns(testActivityEnvelope);
+            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.ActivityEnvelope>())).Returns(Task.CompletedTask);
 
             // Act
             await _func.Run(testActivityDocumentString, _mockLogger.Object);
 
             // Assert
-            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<mdl.Activity>()), Times.Once);
+            _mockActivityEnvelopeMapper.Verify(x => x.MapActivityToActivityEnvelope(It.IsAny<mdl.Activity>()), Times.Once);
+            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<mdl.ActivityEnvelope>()), Times.Once);
             _mockServiceBusHelpers.Verify(x => x.SendMessageToQueue(It.IsAny<string>(), It.IsAny<Exception>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task CatchAndLogExceptionWhenActivityEnvelopeMapperThrowsException()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var testActivity = fixture.Create<mdl.Activity>();
+            var testActivityDocumentString = JsonConvert.SerializeObject(testActivity);
+
+            _mockActivityEnvelopeMapper.Setup(x => x.MapActivityToActivityEnvelope(testActivity)).Throws<ArgumentNullException>();
+
+            // Act
+            Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString, _mockLogger.Object);
+
+            // Assert
+            _mockActivityEnvelopeMapper.Verify(x => x.MapActivityToActivityEnvelope(It.IsAny<mdl.Activity>()), Times.Never);
+            await responseAction.Should().ThrowAsync<Exception>();
+            _mockServiceBusHelpers.Verify(x => x.SendMessageToQueue(It.IsAny<string>(), It.IsAny<Exception>()), Times.Once);
         }
 
         [Fact]
@@ -66,13 +91,13 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 
             var testActivityDocumentString = JsonConvert.SerializeObject(testActivityEnvelope);
 
-            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.Activity>())).ThrowsAsync(It.IsAny<Exception>());
+            _mockActivityDbService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.ActivityEnvelope>())).ThrowsAsync(It.IsAny<Exception>());
 
             // Act
             Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString, _mockLogger.Object);
 
             // Assert
-            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<mdl.Activity>()), Times.Never);
+            _mockActivityDbService.Verify(x => x.AddActivityDocument(It.IsAny<mdl.ActivityEnvelope>()), Times.Never);
             await responseAction.Should().ThrowAsync<Exception>();
             _mockServiceBusHelpers.Verify(x => x.SendMessageToQueue(It.IsAny<string>(), It.IsAny<Exception>()), Times.Once);
         }

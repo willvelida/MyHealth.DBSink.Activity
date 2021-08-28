@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
-using MyHealth.Common.Models;
 using System;
 using System.Threading.Tasks;
 using mdl = MyHealth.Common.Models;
@@ -22,20 +21,13 @@ namespace MyHealth.DBSink.Activity.Services
             _myHealthContainer = _cosmosClient.GetContainer(_configuration["DatabaseName"], _configuration["ContainerName"]);
         }
 
-        public async Task AddActivityDocument(mdl.Activity activityDocument)
+        public async Task AddActivityDocument(mdl.ActivityEnvelope activityEnvelope)
         {
             try
             {
                 ItemRequestOptions itemRequestOptions = new ItemRequestOptions
                 {
                     EnableContentResponseOnWrite = false
-                };
-
-                ActivityEnvelope activityEnvelope = new ActivityEnvelope
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Activity = activityDocument,
-                    DocumentType = "Activity"
                 };
 
                 await _myHealthContainer.CreateItemAsync(

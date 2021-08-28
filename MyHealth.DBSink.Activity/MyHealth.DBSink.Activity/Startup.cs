@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using MyHealth.Common;
 using MyHealth.DBSink.Activity;
 using MyHealth.DBSink.Activity.Functions;
+using MyHealth.DBSink.Activity.Mappers;
 using MyHealth.DBSink.Activity.Services;
 using System.IO;
 
@@ -41,6 +42,7 @@ namespace MyHealth.DBSink.Activity
             });
 
             builder.Services.AddScoped<IActivityDbService, ActivityDbService>();
+            builder.Services.AddScoped<IActivityEnvelopeMapper, ActivityEnvelopeMapper>();
         }
     }
 }

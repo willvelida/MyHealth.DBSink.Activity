@@ -5,6 +5,6 @@ namespace MyHealth.DBSink.Activity.Services
 {
     public interface IActivityDbService
     {
-        Task AddActivityDocument(mdl.Activity activityDocument);
+        Task AddActivityDocument(mdl.ActivityEnvelope activityEnvelope);
     }
 }

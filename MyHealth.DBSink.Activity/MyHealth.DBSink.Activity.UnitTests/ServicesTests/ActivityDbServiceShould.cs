@@ -38,9 +38,9 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
         {
             // Arrange
             var fixture = new Fixture();
-            var testActivityDocument = fixture.Create<Common.Models.Activity>();
-            
-            _mockContainer.SetupCreateItemAsync<Common.Models.Activity>();
+            var testActivityDocument = fixture.Create<Common.Models.ActivityEnvelope>();
+
+            _mockContainer.SetupCreateItemAsync<Common.Models.ActivityEnvelope>();
 
             // Act
             Func<Task> serviceAction = async () => await _sut.AddActivityDocument(testActivityDocument);
@@ -59,9 +59,9 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
         {
             // Arrange
             var fixture = new Fixture();
-            var testActivityDocument = fixture.Create<Common.Models.Activity>();
+            var testActivityDocument = fixture.Create<Common.Models.ActivityEnvelope>();
 
-            _mockContainer.SetupCreateItemAsync<Common.Models.Activity>();
+            _mockContainer.SetupCreateItemAsync<Common.Models.ActivityEnvelope>();
             _mockContainer.Setup(x => x.CreateItemAsync(
                 It.IsAny<ActivityEnvelope>(),
                 It.IsAny<PartitionKey>(),
