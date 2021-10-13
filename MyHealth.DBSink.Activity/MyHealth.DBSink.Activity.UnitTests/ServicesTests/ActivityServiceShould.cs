@@ -1,17 +1,13 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Configuration;
+using FluentAssertions.Execution;
 using Moq;
-using mdl = MyHealth.Common.Models;
 using MyHealth.DBSink.Activity.Repository.Interfaces;
 using MyHealth.DBSink.Activity.Services;
-using MyHealth.DBSink.Activity.UnitTests.TestHelpers;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using FluentAssertions.Execution;
+using mdl = MyHealth.Common.Models;
 
 namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
 {
@@ -60,12 +56,12 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
             // Arrange
             var fixture = new Fixture();
             var testActivityDocument = fixture.Create<mdl.ActivityEnvelope>();
-          
+
             // Act
             Func<Task> serviceAction = async () => await _sut.AddActivityDocument(testActivityDocument);
 
             // Assert
-            await serviceAction.Should().NotThrowAsync<Exception>();          
+            await serviceAction.Should().NotThrowAsync<Exception>();
         }
 
         [Fact]

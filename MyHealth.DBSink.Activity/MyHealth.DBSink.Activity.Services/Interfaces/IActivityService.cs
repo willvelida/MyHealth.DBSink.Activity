@@ -1,8 +1,5 @@
-﻿using mdl = MyHealth.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using mdl = MyHealth.Common.Models;
 
 namespace MyHealth.DBSink.Activity.Services.Interfaces
 {
