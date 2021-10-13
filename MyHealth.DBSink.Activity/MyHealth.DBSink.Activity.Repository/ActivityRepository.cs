@@ -1,18 +1,19 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
+using MyHealth.Common.Models;
+using MyHealth.DBSink.Activity.Repository.Interfaces;
 using System;
 using System.Threading.Tasks;
-using mdl = MyHealth.Common.Models;
 
-namespace MyHealth.DBSink.Activity.Services
+namespace MyHealth.DBSink.Activity.Repository
 {
-    public class ActivityDbService : IActivityDbService
+    public class ActivityRepository : IActivityRepository
     {
         private readonly CosmosClient _cosmosClient;
         private readonly Container _myHealthContainer;
         private readonly IConfiguration _configuration;
 
-        public ActivityDbService(
+        public ActivityRepository(
             CosmosClient cosmosClient,
             IConfiguration configuration)
         {
@@ -21,7 +22,7 @@ namespace MyHealth.DBSink.Activity.Services
             _myHealthContainer = _cosmosClient.GetContainer(_configuration["DatabaseName"], _configuration["ContainerName"]);
         }
 
-        public async Task AddActivityDocument(mdl.ActivityEnvelope activityEnvelope)
+        public async Task CreateActivity(ActivityEnvelope activityEnvelope)
         {
             try
             {

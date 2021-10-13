@@ -6,8 +6,11 @@ using Microsoft.Extensions.Logging;
 using MyHealth.Common;
 using MyHealth.DBSink.Activity;
 using MyHealth.DBSink.Activity.Functions;
-using MyHealth.DBSink.Activity.Mappers;
+using MyHealth.DBSink.Activity.Repository;
+using MyHealth.DBSink.Activity.Repository.Interfaces;
 using MyHealth.DBSink.Activity.Services;
+using MyHealth.DBSink.Activity.Services.Interfaces;
+using System;
 using System.IO;
 
 [assembly: FunctionsStartup(typeof(Startup))]
@@ -32,7 +35,12 @@ namespace MyHealth.DBSink.Activity
             builder.Services.AddSingleton(sp =>
             {
                 IConfiguration config = sp.GetService<IConfiguration>();
-                return new CosmosClient(config["CosmosDBConnectionString"]);
+                CosmosClientOptions cosmosClientOptions = new CosmosClientOptions
+                {
+                    MaxRetryAttemptsOnRateLimitedRequests = 3,
+                    MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60)
+                };
+                return new CosmosClient(config["CosmosDBConnectionString"], cosmosClientOptions);
             });
 
             builder.Services.AddSingleton<IServiceBusHelpers>(sp =>
@@ -41,8 +49,8 @@ namespace MyHealth.DBSink.Activity
                 return new ServiceBusHelpers(config["ServiceBusConnectionString"]);
             });
 
-            builder.Services.AddScoped<IActivityDbService, ActivityDbService>();
-            builder.Services.AddScoped<IActivityEnvelopeMapper, ActivityEnvelopeMapper>();
+            builder.Services.AddSingleton<IActivityRepository, ActivityRepository>();
+            builder.Services.AddSingleton<IActivityService, ActivityService>();
         }
     }
 }

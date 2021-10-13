@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MyHealth.Common" Version="1.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyHealth.DBSink.Activity.Repository\MyHealth.DBSink.Activity.Repository.csproj" />
+  </ItemGroup>
+
+</Project>

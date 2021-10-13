@@ -2,8 +2,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyHealth.Common;
-using MyHealth.DBSink.Activity.Mappers;
-using MyHealth.DBSink.Activity.Services;
+using MyHealth.DBSink.Activity.Services.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
@@ -14,19 +13,16 @@ namespace MyHealth.DBSink.Activity.Functions
     public class CreateActivityDocument
     {
         private readonly IConfiguration _configuration;
-        private readonly IActivityDbService _activityDbService;
-        private readonly IActivityEnvelopeMapper _activityEnvelopeMapper;
+        private readonly IActivityService _activityService;
         private readonly IServiceBusHelpers _serviceBusHelpers;
 
         public CreateActivityDocument(
             IConfiguration configuration,
-            IActivityDbService activityDbService,
-            IActivityEnvelopeMapper activityEnvelopeMapper,
+            IActivityService activityService,
             IServiceBusHelpers serviceBusHelpers)
         {
             _configuration = configuration;
-            _activityDbService = activityDbService;
-            _activityEnvelopeMapper = activityEnvelopeMapper;
+            _activityService = activityService;
             _serviceBusHelpers = serviceBusHelpers;
         }
 
@@ -37,9 +33,9 @@ namespace MyHealth.DBSink.Activity.Functions
             {
                 // Convert incoming message into Activity Document
                 var activity = JsonConvert.DeserializeObject<mdl.Activity>(mySbMsg);
-                var activityEnvelope = _activityEnvelopeMapper.MapActivityToActivityEnvelope(activity);
+                var activityEnvelope = _activityService.MapActivityToActivityEnvelope(activity);
                 // Persist Activity Document to Cosmos DB
-                await _activityDbService.AddActivityDocument(activityEnvelope);
+                await _activityService.AddActivityDocument(activityEnvelope);
                 logger.LogInformation($"Activity Document with {activityEnvelope.Date} has been persisted");
             }
             catch (Exception ex)

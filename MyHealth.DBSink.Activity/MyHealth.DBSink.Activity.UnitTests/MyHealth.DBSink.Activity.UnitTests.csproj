@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MyHealth.DBSink.Activity.Repository\MyHealth.DBSink.Activity.Repository.csproj" />
+    <ProjectReference Include="..\MyHealth.DBSink.Activity.Services\MyHealth.DBSink.Activity.Services.csproj" />
     <ProjectReference Include="..\MyHealth.DBSink.Activity\MyHealth.DBSink.Activity.csproj" />
   </ItemGroup>
 

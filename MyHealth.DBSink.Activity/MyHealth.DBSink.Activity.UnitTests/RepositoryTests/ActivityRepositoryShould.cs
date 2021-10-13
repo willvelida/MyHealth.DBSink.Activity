@@ -4,24 +4,26 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using MyHealth.Common.Models;
-using MyHealth.DBSink.Activity.Services;
+using MyHealth.DBSink.Activity.Repository;
 using MyHealth.DBSink.Activity.UnitTests.TestHelpers;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
+namespace MyHealth.DBSink.Activity.UnitTests.RepositoryTests
 {
-    public class ActivityDbServiceShould
+    public class ActivityRepositoryShould
     {
         private Mock<CosmosClient> _mockCosmosClient;
         private Mock<Container> _mockContainer;
         private Mock<IConfiguration> _mockConfiguration;
 
-        private ActivityDbService _sut;
+        private ActivityRepository _sut;
 
-        public ActivityDbServiceShould()
+        public ActivityRepositoryShould()
         {
             _mockCosmosClient = new Mock<CosmosClient>();
             _mockContainer = new Mock<Container>();
@@ -30,7 +32,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
             _mockConfiguration.Setup(x => x["DatabaseName"]).Returns("db");
             _mockConfiguration.Setup(x => x["ContainerName"]).Returns("col");
 
-            _sut = new ActivityDbService(_mockCosmosClient.Object, _mockConfiguration.Object);
+            _sut = new ActivityRepository(_mockCosmosClient.Object, _mockConfiguration.Object);
         }
 
         [Fact]
@@ -43,7 +45,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
             _mockContainer.SetupCreateItemAsync<Common.Models.ActivityEnvelope>();
 
             // Act
-            Func<Task> serviceAction = async () => await _sut.AddActivityDocument(testActivityDocument);
+            Func<Task> serviceAction = async () => await _sut.CreateActivity(testActivityDocument);
 
             // Assert
             await serviceAction.Should().NotThrowAsync<Exception>();
@@ -69,7 +71,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.ServicesTests
                 It.IsAny<CancellationToken>())).ThrowsAsync(new Exception());
 
             // Act
-            Func<Task> serviceAction = async () => await _sut.AddActivityDocument(testActivityDocument);
+            Func<Task> serviceAction = async () => await _sut.CreateActivity(testActivityDocument);
 
             // Assert
             await serviceAction.Should().ThrowAsync<Exception>();
