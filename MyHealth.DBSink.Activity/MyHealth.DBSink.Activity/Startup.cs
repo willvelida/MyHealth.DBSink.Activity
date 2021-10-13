@@ -11,11 +11,13 @@ using MyHealth.DBSink.Activity.Repository.Interfaces;
 using MyHealth.DBSink.Activity.Services;
 using MyHealth.DBSink.Activity.Services.Interfaces;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace MyHealth.DBSink.Activity
 {
+    [ExcludeFromCodeCoverage]
     public class Startup : FunctionsStartup
     {
         private static ILogger _logger;
