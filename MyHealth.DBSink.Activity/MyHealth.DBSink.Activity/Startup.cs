@@ -64,7 +64,7 @@ namespace MyHealth.DBSink.Activity
             var configurationBuilder = builder.ConfigurationBuilder.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(Environment.GetEnvironmentVariable("myhealthappconfigendpoint")), new DefaultAzureCredential())
-                .Select("")
+                .Select("*")
                 .ConfigureKeyVault(kv =>
                 {
                     kv.SetCredential(new DefaultAzureCredential());
