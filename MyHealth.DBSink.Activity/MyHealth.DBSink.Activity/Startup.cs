@@ -22,12 +22,7 @@ namespace MyHealth.DBSink.Activity
     public class Startup : FunctionsStartup
     {
         private static ILogger _logger;
-        public IConfiguration Configuration { get; set; }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfiguration Configuration = null;
 
         public Startup()
         {
@@ -70,6 +65,8 @@ namespace MyHealth.DBSink.Activity
                     kv.SetCredential(new DefaultAzureCredential());
                 });
             });
+
+            Configuration = configurationBuilder.Build();
         }
     }
 }
