@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using Azure.Identity;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,38 +22,49 @@ namespace MyHealth.DBSink.Activity
     public class Startup : FunctionsStartup
     {
         private static ILogger _logger;
+        public IConfiguration Configuration { get; set; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            builder.Services.AddSingleton<IConfiguration>(config);
+            builder.Services.AddAzureAppConfiguration();
             builder.Services.AddLogging();
             _logger = new LoggerFactory().CreateLogger(nameof(CreateActivityDocument));
 
             builder.Services.AddSingleton(sp =>
             {
-                IConfiguration config = sp.GetService<IConfiguration>();
                 CosmosClientOptions cosmosClientOptions = new CosmosClientOptions
                 {
                     MaxRetryAttemptsOnRateLimitedRequests = 3,
                     MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60)
                 };
-                return new CosmosClient(config["CosmosDBConnectionString"], cosmosClientOptions);
+                return new CosmosClient(Configuration["MyHealth:CosmosEndpoint"], new DefaultAzureCredential(), cosmosClientOptions);
             });
 
             builder.Services.AddSingleton<IServiceBusHelpers>(sp =>
             {
-                IConfiguration config = sp.GetService<IConfiguration>();
-                return new ServiceBusHelpers(config["ServiceBusConnectionString"]);
+                return new ServiceBusHelpers(Configuration["VelidaEngine:ServiceBusConnectionString"]);
             });
 
             builder.Services.AddSingleton<IActivityRepository, ActivityRepository>();
             builder.Services.AddSingleton<IActivityService, ActivityService>();
+        }
+
+        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+        {
+            var configurationBuilder = builder.ConfigurationBuilder.AddAzureAppConfiguration(options =>
+            {
+                options.Connect(new Uri(Environment.GetEnvironmentVariable("myhealthappconfigendpoint")), new DefaultAzureCredential())
+                .Select("")
+                .ConfigureKeyVault(kv =>
+                {
+                    kv.SetCredential(new DefaultAzureCredential());
+                });
+            });
         }
     }
 }

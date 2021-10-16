@@ -27,10 +27,10 @@ namespace MyHealth.DBSink.Activity.UnitTests.RepositoryTests
             _mockContainer = new Mock<Container>();
             _mockCosmosClient.Setup(x => x.GetContainer(It.IsAny<string>(), It.IsAny<string>())).Returns(_mockContainer.Object);
             _mockConfiguration = new Mock<IConfiguration>();
-            _mockConfiguration.Setup(x => x["DatabaseName"]).Returns("db");
-            _mockConfiguration.Setup(x => x["ContainerName"]).Returns("col");
+            Environment.SetEnvironmentVariable("MyHealth:DatabaseName", "testdb");
+            Environment.SetEnvironmentVariable("MyHealth:RecordsContainer", "testcontainer");
 
-            _sut = new ActivityRepository(_mockCosmosClient.Object, _mockConfiguration.Object);
+            _sut = new ActivityRepository(_mockCosmosClient.Object);
         }
 
         [Fact]

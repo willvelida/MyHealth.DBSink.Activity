@@ -18,7 +18,6 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
     public class CreateActivityDocumentShould
     {
         private Mock<ILogger> _mockLogger;
-        private Mock<IConfiguration> _mockConfiguration;
         private Mock<IActivityService> _mockActivityService;
         private Mock<IServiceBusHelpers> _mockServiceBusHelpers;
 
@@ -26,14 +25,12 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 
         public CreateActivityDocumentShould()
         {
-            _mockConfiguration = new Mock<IConfiguration>();
             _mockLogger = new Mock<ILogger>();
             _mockActivityService = new Mock<IActivityService>();
-            _mockConfiguration.Setup(x => x["ServiceBusConnectionString"]).Returns("ServiceBusConnectionString");
+            Environment.SetEnvironmentVariable("MyHealth:ExceptionQueue", "testexceptionqueue");
             _mockServiceBusHelpers = new Mock<IServiceBusHelpers>();
 
             _func = new CreateActivityDocument(
-                _mockConfiguration.Object,
                 _mockActivityService.Object,
                 _mockServiceBusHelpers.Object);
         }

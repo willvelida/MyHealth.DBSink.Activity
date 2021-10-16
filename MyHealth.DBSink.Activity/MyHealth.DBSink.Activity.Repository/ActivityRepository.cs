@@ -11,15 +11,12 @@ namespace MyHealth.DBSink.Activity.Repository
     {
         private readonly CosmosClient _cosmosClient;
         private readonly Container _myHealthContainer;
-        private readonly IConfiguration _configuration;
 
         public ActivityRepository(
-            CosmosClient cosmosClient,
-            IConfiguration configuration)
+            CosmosClient cosmosClient)
         {
-            _configuration = configuration;
             _cosmosClient = cosmosClient;
-            _myHealthContainer = _cosmosClient.GetContainer(_configuration["DatabaseName"], _configuration["ContainerName"]);
+            _myHealthContainer = _cosmosClient.GetContainer(Environment.GetEnvironmentVariable("MyHealth:DatabaseName"), Environment.GetEnvironmentVariable("MyHealth:RecordsContainer"));
         }
 
         public async Task CreateActivity(ActivityEnvelope activityEnvelope)
