@@ -29,6 +29,11 @@ namespace MyHealth.DBSink.Activity
             Configuration = configuration;
         }
 
+        public Startup()
+        {
+
+        }
+
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddAzureAppConfiguration();
