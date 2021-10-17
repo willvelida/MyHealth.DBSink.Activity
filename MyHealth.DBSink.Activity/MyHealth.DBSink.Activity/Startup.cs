@@ -22,10 +22,22 @@ namespace MyHealth.DBSink.Activity
     public class Startup : FunctionsStartup
     {
         private static ILogger _logger;
-        public IConfigurationRoot _configuration = null;
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
+            var config = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .AddAzureAppConfiguration(options =>
+                {
+                    options.Connect(new Uri(Environment.GetEnvironmentVariable("myhealthappconfigendpoint")), new DefaultAzureCredential())
+                    .Select("*")
+                    .ConfigureKeyVault(kv =>
+                    {
+                        kv.SetCredential(new DefaultAzureCredential());
+                    });
+                })
+                .Build();
+
             builder.Services.AddAzureAppConfiguration();
             builder.Services.AddLogging();
             _logger = new LoggerFactory().CreateLogger(nameof(CreateActivityDocument));
@@ -37,31 +49,16 @@ namespace MyHealth.DBSink.Activity
                     MaxRetryAttemptsOnRateLimitedRequests = 3,
                     MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60)
                 };
-                return new CosmosClient(_configuration["MyHealth:CosmosEndpoint"], new DefaultAzureCredential(), cosmosClientOptions);
+                return new CosmosClient(config["MyHealth:CosmosEndpoint"], new DefaultAzureCredential(), cosmosClientOptions);
             });
 
             builder.Services.AddSingleton<IServiceBusHelpers>(sp =>
             {
-                return new ServiceBusHelpers(_configuration["VelidaEngine:ServiceBusConnectionString"]);
+                return new ServiceBusHelpers(config["VelidaEngine:ServiceBusConnectionString"]);
             });
 
             builder.Services.AddSingleton<IActivityRepository, ActivityRepository>();
             builder.Services.AddSingleton<IActivityService, ActivityService>();
-        }
-
-        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
-        {
-            var configurationBuilder = builder.ConfigurationBuilder.AddAzureAppConfiguration(options =>
-            {
-                options.Connect(new Uri(Environment.GetEnvironmentVariable("myhealthappconfigendpoint")), new DefaultAzureCredential())
-                .Select("*")
-                .ConfigureKeyVault(kv =>
-                {
-                    kv.SetCredential(new DefaultAzureCredential());
-                });
-            });
-
-            _configuration = configurationBuilder.Build();
-        }
+        }       
     }
 }
