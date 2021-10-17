@@ -38,7 +38,7 @@ namespace MyHealth.DBSink.Activity
                 })
                 .Build();
 
-            builder.Services.AddSingleton<IConfiguration>();
+            builder.Services.AddSingleton<IConfiguration>(config);
             builder.Services.AddAzureAppConfiguration();
             builder.Services.AddLogging();
             _logger = new LoggerFactory().CreateLogger(nameof(CreateActivityDocument));
