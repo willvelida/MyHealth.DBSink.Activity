@@ -20,6 +20,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         private Mock<ILogger> _mockLogger;
         private Mock<IActivityService> _mockActivityService;
         private Mock<IServiceBusHelpers> _mockServiceBusHelpers;
+        private Mock<IConfiguration> _mockConfiguration;
 
         private CreateActivityDocument _func;
 
@@ -27,12 +28,14 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
         {
             _mockLogger = new Mock<ILogger>();
             _mockActivityService = new Mock<IActivityService>();
-            Environment.SetEnvironmentVariable("MyHealth:ExceptionQueue", "testexceptionqueue");
+            _mockConfiguration = new Mock<IConfiguration>();
+            _mockConfiguration.Setup(x => x["MyHealth:ExceptionQueue"]).Returns("testexceptionqueue");
             _mockServiceBusHelpers = new Mock<IServiceBusHelpers>();
 
             _func = new CreateActivityDocument(
                 _mockActivityService.Object,
-                _mockServiceBusHelpers.Object);
+                _mockServiceBusHelpers.Object,
+                _mockConfiguration.Object);
         }
 
         [Fact]

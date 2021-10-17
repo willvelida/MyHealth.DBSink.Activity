@@ -14,13 +14,16 @@ namespace MyHealth.DBSink.Activity.Functions
     {
         private readonly IActivityService _activityService;
         private readonly IServiceBusHelpers _serviceBusHelpers;
+        private readonly IConfiguration _configuration;
 
         public CreateActivityDocument(
             IActivityService activityService,
-            IServiceBusHelpers serviceBusHelpers)
+            IServiceBusHelpers serviceBusHelpers,
+            IConfiguration configuration)
         {
             _activityService = activityService;
             _serviceBusHelpers = serviceBusHelpers;
+            _configuration = configuration;
         }
 
         [FunctionName(nameof(CreateActivityDocument))]
@@ -39,7 +42,7 @@ namespace MyHealth.DBSink.Activity.Functions
             {
                 // Log Error
                 logger.LogError($"Exception thrown in {nameof(CreateActivityDocument)}: {ex}", ex);
-                await _serviceBusHelpers.SendMessageToQueue(Environment.GetEnvironmentVariable("MyHealth:ExceptionQueue"), ex);
+                await _serviceBusHelpers.SendMessageToQueue(_configuration["MyHealth:ExceptionQueue"], ex);
                 throw;
             }
         }
