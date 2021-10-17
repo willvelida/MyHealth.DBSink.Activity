@@ -22,12 +22,7 @@ namespace MyHealth.DBSink.Activity
     public class Startup : FunctionsStartup
     {
         private static ILogger _logger;
-        public IConfiguration Configuration = null;
-
-        public Startup()
-        {
-
-        }
+        public IConfigurationRoot _configuration = null;
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
@@ -42,12 +37,12 @@ namespace MyHealth.DBSink.Activity
                     MaxRetryAttemptsOnRateLimitedRequests = 3,
                     MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60)
                 };
-                return new CosmosClient(Configuration["MyHealth:CosmosEndpoint"], new DefaultAzureCredential(), cosmosClientOptions);
+                return new CosmosClient(_configuration["MyHealth:CosmosEndpoint"], new DefaultAzureCredential(), cosmosClientOptions);
             });
 
             builder.Services.AddSingleton<IServiceBusHelpers>(sp =>
             {
-                return new ServiceBusHelpers(Configuration["VelidaEngine:ServiceBusConnectionString"]);
+                return new ServiceBusHelpers(_configuration["VelidaEngine:ServiceBusConnectionString"]);
             });
 
             builder.Services.AddSingleton<IActivityRepository, ActivityRepository>();
@@ -66,7 +61,7 @@ namespace MyHealth.DBSink.Activity
                 });
             });
 
-            Configuration = configurationBuilder.Build();
+            _configuration = configurationBuilder.Build();
         }
     }
 }
