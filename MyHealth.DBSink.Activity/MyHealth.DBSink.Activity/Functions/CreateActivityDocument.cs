@@ -15,19 +15,22 @@ namespace MyHealth.DBSink.Activity.Functions
         private readonly IActivityService _activityService;
         private readonly IServiceBusHelpers _serviceBusHelpers;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<CreateActivityDocument> _logger;
 
         public CreateActivityDocument(
             IActivityService activityService,
             IServiceBusHelpers serviceBusHelpers,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<CreateActivityDocument> logger)
         {
             _activityService = activityService;
             _serviceBusHelpers = serviceBusHelpers;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [FunctionName(nameof(CreateActivityDocument))]
-        public async Task Run([ServiceBusTrigger("myhealthactivitytopic", "myhealthactivitysubscription", Connection = "ServiceBusConnectionString")] string mySbMsg, ILogger logger)
+        public async Task Run([ServiceBusTrigger("myhealthactivitytopic", "myhealthactivitysubscription", Connection = "ServiceBusConnectionString")] string mySbMsg)
         {
             try
             {
@@ -36,12 +39,12 @@ namespace MyHealth.DBSink.Activity.Functions
                 var activityEnvelope = _activityService.MapActivityToActivityEnvelope(activity);
                 // Persist Activity Document to Cosmos DB
                 await _activityService.AddActivityDocument(activityEnvelope);
-                logger.LogInformation($"Activity Document with {activityEnvelope.Date} has been persisted");
+                _logger.LogInformation($"Activity Document with {activityEnvelope.Date} has been persisted");
             }
             catch (Exception ex)
             {
                 // Log Error
-                logger.LogError($"Exception thrown in {nameof(CreateActivityDocument)}: {ex}", ex);
+                _logger.LogError($"Exception thrown in {nameof(CreateActivityDocument)}: {ex}", ex);
                 await _serviceBusHelpers.SendMessageToQueue(_configuration["MyHealth:ExceptionQueue"], ex);
                 throw;
             }

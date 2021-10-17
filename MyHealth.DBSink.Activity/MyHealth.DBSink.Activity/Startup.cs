@@ -21,8 +21,6 @@ namespace MyHealth.DBSink.Activity
     [ExcludeFromCodeCoverage]
     public class Startup : FunctionsStartup
     {
-        private static ILogger _logger;
-
         public override void Configure(IFunctionsHostBuilder builder)
         {
             var config = new ConfigurationBuilder()
@@ -41,7 +39,6 @@ namespace MyHealth.DBSink.Activity
             builder.Services.AddSingleton<IConfiguration>(config);
             builder.Services.AddAzureAppConfiguration();
             builder.Services.AddLogging();
-            _logger = new LoggerFactory().CreateLogger(nameof(CreateActivityDocument));
 
             builder.Services.AddSingleton(sp =>
             {

@@ -17,7 +17,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 {
     public class CreateActivityDocumentShould
     {
-        private Mock<ILogger> _mockLogger;
+        private Mock<ILogger<CreateActivityDocument>> _mockLogger;
         private Mock<IActivityService> _mockActivityService;
         private Mock<IServiceBusHelpers> _mockServiceBusHelpers;
         private Mock<IConfiguration> _mockConfiguration;
@@ -26,7 +26,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
 
         public CreateActivityDocumentShould()
         {
-            _mockLogger = new Mock<ILogger>();
+            _mockLogger = new Mock<ILogger<CreateActivityDocument>>();
             _mockActivityService = new Mock<IActivityService>();
             _mockConfiguration = new Mock<IConfiguration>();
             _mockConfiguration.Setup(x => x["MyHealth:ExceptionQueue"]).Returns("testexceptionqueue");
@@ -35,7 +35,8 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
             _func = new CreateActivityDocument(
                 _mockActivityService.Object,
                 _mockServiceBusHelpers.Object,
-                _mockConfiguration.Object);
+                _mockConfiguration.Object,
+                _mockLogger.Object);
         }
 
         [Fact]
@@ -51,7 +52,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
             _mockActivityService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.ActivityEnvelope>())).Returns(Task.CompletedTask);
 
             // Act
-            await _func.Run(testActivityDocumentString, _mockLogger.Object);
+            await _func.Run(testActivityDocumentString);
 
             // Assert
             _mockActivityService.Verify(x => x.MapActivityToActivityEnvelope(It.IsAny<mdl.Activity>()), Times.Once);
@@ -70,7 +71,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
             _mockActivityService.Setup(x => x.MapActivityToActivityEnvelope(testActivity)).Throws<ArgumentNullException>();
 
             // Act
-            Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString, _mockLogger.Object);
+            Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString);
 
             // Assert
             _mockActivityService.Verify(x => x.MapActivityToActivityEnvelope(It.IsAny<mdl.Activity>()), Times.Never);
@@ -90,7 +91,7 @@ namespace MyHealth.DBSink.Activity.UnitTests.FunctionTests
             _mockActivityService.Setup(x => x.AddActivityDocument(It.IsAny<mdl.ActivityEnvelope>())).ThrowsAsync(It.IsAny<Exception>());
 
             // Act
-            Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString, _mockLogger.Object);
+            Func<Task> responseAction = async () => await _func.Run(testActivityDocumentString);
 
             // Assert
             _mockActivityService.Verify(x => x.AddActivityDocument(It.IsAny<mdl.ActivityEnvelope>()), Times.Never);
