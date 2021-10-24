@@ -47,11 +47,13 @@ namespace MyHealth.DBSink.Activity
                     MaxRetryAttemptsOnRateLimitedRequests = 3,
                     MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60)
                 };
+                IConfiguration config = sp.GetRequiredService<IConfiguration>();
                 return new CosmosClient(config["MyHealth:CosmosEndpoint"], new DefaultAzureCredential(), cosmosClientOptions);
             });
 
             builder.Services.AddSingleton<IServiceBusHelpers>(sp =>
             {
+                IConfiguration config = sp.GetRequiredService<IConfiguration>();
                 return new ServiceBusHelpers(config["VelidaEngine:ServiceBusConnectionString"]);
             });
 
